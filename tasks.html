@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Navigator</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<style>body{font-family:'Roboto Mono',monospace;background:linear-gradient(to bottom,#1a1a1a,#111);color:#fff;margin:0;padding:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:18px;text-shadow:0 1px 2px rgba(0,0,0,.5)}.top-bar{position:fixed;top:0;left:0;right:0;background:#333;display:flex;align-items:center;justify-content:space-between;padding:10px 15px;z-index:1000;box-shadow:0 0 5px #000}#level-select-btn,#reset-btn{background:#33ccff;color:#1a1a1a;border:none;padding:8px 12px;cursor:pointer;font-size:.8em;border-radius:5px;font-weight:700;box-shadow:0 0 3px #000;margin-left:15px}#level-select-btn:hover,#reset-btn:hover{background:#44d9ff}#reset-btn{background:#ff6b6b;color:#fff}.status-section{display:flex;align-items:center;gap:15px;flex-shrink:0}#xp-bar-container{background:#333;border-radius:5px;width:180px;height:14px;position:relative;flex-shrink:0}#xp-bar{background:#66f;height:100%;width:0;border-radius:5px;transition:.5s;position:absolute;left:0;top:0}#xp-text{font-size:.9em;white-space:nowrap;text-shadow:none;color:#fff}#focus-bar-container{background:#333;border-radius:5px;width:120px;height:14px;position:relative;flex-shrink:0}#focus-bar{background:#6f6;height:100%;width:0;border-radius:5px;transition:.5s;position:absolute;left:0;top:0}#focus-text{font-size:.9em;white-space:nowrap;color:#fff;text-shadow:none}.right-section{display:flex;flex-direction:column;align-items:flex-end;gap:5px;overflow:hidden;padding-left:10px;flex-grow:1}#inventory-container{position:relative;z-index:10;overflow-x:auto;display:flex;width:100%;justify-content:flex-end;align-items:flex-start}#inventory{background:#2a2a2a;border:2px solid #33ccff;border-radius:5px;padding:5px 8px;box-shadow:0 0 3px #000;font-size:.9em;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;max-width:calc(100% - 140px)}#inventory h4{margin:0;font-size:1em}#inventory-items{margin-left:5px;display:flex;flex-wrap:wrap;gap:3px;overflow:hidden;width:100%}.inventory-item{background:#444;padding:3px 6px;border-radius:5px;font-size:.9em;white-space:nowrap}#previous-levels-container{display:flex;flex-direction:row;align-items:flex-end;gap:3px;font-size:.9em;max-height:60px;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap}.small-level-box{background:#2a2a2a;border:2px solid #33ccff;border-radius:5px;padding:4px 8px;font-size:.85em;flex-shrink:0;cursor:pointer;text-shadow:none;white-space:nowrap}.small-level-box.completed{background:#66ff66;border-color:#66ff66}.small-level-box.completed:hover{background:#77ff77}#game{flex:1;display:flex;flex-direction:column;align-items:center;overflow:auto;padding-top:90px;box-sizing:border-box}#current-level-container{background:#2a2a2a;border:2px solid #33ccff;border-radius:10px;padding:40px;box-shadow:0 0 10px #000;text-align:center;width:95%;max-width:900px;margin:30px auto;font-size:1.1em;position:relative}#current-level-container:before{content:"";position:absolute;top:10px;left:10px;right:10px;bottom:10px;border:1px dashed #66f;pointer-events:none;opacity:.3}#current-level-container h2{font-size:1.7em;margin-bottom:20px;color:#66ffcc}#current-level-container p{margin:10px 0;font-size:1.2em;color:#ccc}.task{background:#1a1a1a;border:2px solid #33ccff;border-radius:10px;padding:25px;font-size:1em;position:relative}.task p{margin:5px 0;font-size:1.05em}.sub-task-button,.complete-level-button{background:#33ccff;color:#1a1a1a;border:none;padding:12px 18px;cursor:pointer;font-size:1.1em;border-radius:5px;margin-top:10px;display:inline-block;font-weight:700;transition:background-color .3s ease}.sub-task-button.active{border:2px solid yellow;box-shadow:0 0 8px yellow}.sub-task-button.completed{background:#66ff66}.sub-task-button:hover{background:#44d9ff}.complete-level-button:hover{background:#44d9ff}.sub-task-details{display:none;background:#222;padding:15px;border-radius:5px;margin-top:10px;font-size:1em}.sub-task-details.show{display:block}.reward{color:#66ff66;font-weight:700;margin-top:10px;display:none;font-size:1em}.task-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));grid-gap:25px;margin-top:30px}#progress-container{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);width:60%;height:10px;background:#333;border-radius:5px;overflow:hidden;z-index:1000}#progress-bar{height:100%;width:0;background:#66ff66;transition:.5s}#level-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#2a2a2a;border:2px solid #33ccff;border-radius:5px;padding:10px;box-shadow:0 0 10px #000;display:none;max-width:80%;max-height:80%;overflow:auto;z-index:2000}#level-modal h3{margin-top:0;font-size:1.1em}#level-modal .close-btn{float:right;cursor:pointer;background:#33ccff;border:none;border-radius:3px;padding:3px 6px;color:#1a1a1a;font-size:.9em}#overlay-message,#break-suggestion{position:fixed;left:50%;transform:translateX(-50%);background:#333;color:#fff;border-radius:10px;text-align:center;z-index:2000;padding:8px 15px;font-size:1em;display:none;opacity:0;transition:opacity .5s ease}#overlay-message{top:15%}#break-suggestion{top:60px}.show-message{opacity:1;display:block}#victory{text-align:center;display:none;padding:50px;position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:1002;display:flex;flex-direction:column;justify-content:center;align-items:center}#victory .victory-text{font-size:2.5em;font-weight:700;color:#ffcc00;margin-bottom:20px;position:relative;z-index:10;display:block!important}#victory .silver-key{font-size:4em;position:relative;z-index:10;color:silver;margin-bottom:30px;animation:pulse 2s infinite}@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}#victory #restart-game-btn{margin-top:20px;margin-left:auto;margin-right:auto}</style>
+</head>
+<body>
+<div class="top-bar">
+<div class="status-section">
+<button id="level-select-btn" onclick="showLevelSelectionModal()">Select Level</button>
+<button id="reset-btn" onclick="resetGame()">Reset Game</button>
+<div style="display:flex;align-items:center;gap:5px">
+<div id="xp-bar-container">
+<div id="xp-bar"></div>
+</div>
+<div id="xp-text">Lvl <span id="player-level">1</span> | XP: <span id="current-xp">0</span>/<span id="xp-needed">100</span></div>
+</div>
+<div style="display:flex;align-items:center;gap:5px">
+<div id="focus-bar-container">
+<div id="focus-bar"></div>
+</div>
+<div id="focus-text">Focus: <span id="focus-score">0</span></div>
+</div>
+</div>
+<div class="right-section">
+<div id="inventory-container">
+<div id="inventory">
+<h4>Inv</h4>
+<div id="inventory-items"></div>
+</div>
+</div>
+<div id="previous-levels-container"></div>
+</div>
+</div>
+<div id="game">
+<div id="current-level-container"></div>
+</div>
+<div id="victory">
+<p class="victory-text">🚀 Congratulations! You've Won Today's Silver Key! 🚀</p>
+<p class="silver-key"><i class="fas fa-key"></i></p>
+<button id="restart-game-btn" class="complete-level-button" onclick="resetGame()">Restart Game</button>
+</div>
+<div id="progress-container">
+<div id="progress-bar"></div>
+</div>
+<div id="level-modal"></div>
+<div id="overlay-message"></div>
+<div id="break-suggestion"></div>
+<script>
+var currentLevel=parseInt(localStorage.getItem('currentLevel'))||1,playerLevel=parseInt(localStorage.getItem('playerLevel'))||1,currentXP=parseInt(localStorage.getItem('currentXP'))||0,xpNeeded=parseInt(localStorage.getItem('xpNeeded'))||100,completedSubTasks=JSON.parse(localStorage.getItem('completedSubTasks'))||{},completedSubTaskCount=parseInt(localStorage.getItem('completedSubTaskCount'))||0,focusScore=parseInt(localStorage.getItem('focusScore'))||0,currentSubTask=null,completedLevels=JSON.parse(localStorage.getItem('completedLevels'))||{},encouragingMessages=["Great job!","Keep going, you're doing well!","Excellent focus!","You're making progress!","Stay consistent and you'll succeed!"],totalLevels=8,subTasksCount={1:2,2:2,3:4,4:2,5:2,6:2,7:4,8:2},levelsData={1:{title:"1️⃣ Level One",desc:"Description of level one.",tasks:[{desc:"Task 1.1",reward:"Reward A 🎁"},{desc:"Task 1.2",reward:"Reward B 🌟"}]},2:{title:"2️⃣ Level Two",desc:"Description of level two.",tasks:[{desc:"Task 2.1",reward:"Reward C 🎉"},{desc:"Task 2.2",reward:"Reward D 🏆"}]},3:{title:"3️⃣ Level Three",desc:"Description of level three.",tasks:[{desc:"Task 3.1",reward:"Reward E 🎈"},{desc:"Task 3.2",reward:"Reward F 🥇"},{desc:"Task 3.3",reward:"Reward G 🌠"},{desc:"Task 3.4",reward:"Reward H 🍀"}]},4:{title:"4️⃣ Level Four",desc:"Description of level four.",tasks:[{desc:"Task 4.1",reward:"Reward I 🎯"},{desc:"Task 4.2",reward:"Reward J 🔔"}]},5:{title:"5️⃣ Level Five",desc:"Description of level five.",tasks:[{desc:"Task 5.1",reward:"Reward K 🗝️"},{desc:"Task 5.2",reward:"Reward L 💡"}]},6:{title:"6️⃣ Level Six",desc:"Description of level six.",tasks:[{desc:"Task 6.1",reward:"Reward M 🛡️"},{desc:"Task 6.2",reward:"Reward N 🔮"}]},7:{title:"7️⃣ Level Seven",desc:"Description of level seven.",tasks:[{desc:"Task 7.1",reward:"Reward O 🌈"},{desc:"Task 7.2",reward:"Reward P 💥"},{desc:"Task 7.3",reward:"Reward Q 💖"},{desc:"Task 7.4",reward:"Reward R 🚀"}]},8:{title:"8️⃣ Level Eight",desc:"Description of level eight.",tasks:[{desc:"Task 8.1",reward:"Reward S 💯"},{desc:"Task 8.2",reward:"Reward T 🎉"}]}};
+function renderCurrentLevel(){
+    var levelData = levelsData[currentLevel];
+    var container = document.getElementById('current-level-container');
+    var tasksHtml = levelData.tasks.map(function(task, index) {
+        var isCompleted = completedSubTasks[currentLevel] && completedSubTasks[currentLevel][index + 1];
+        return `
+            <div class="task" id="task-${currentLevel}-${index + 1}">
+                <p>${task.desc}</p>
+                <button class="sub-task-button ${isCompleted ? 'completed' : ''}" id="l${currentLevel}s${index + 1}-btn" onclick="toggleSubTaskDetails(${currentLevel}, ${index + 1})">${isCompleted ? `Sub Task ${index + 1} (Done)` : 'Start'}</button>
+                <div class="sub-task-details" id="sub-task-${currentLevel}-${index + 1}">
+                    <p>Focus and complete.</p>
+                    <button id="complete-l${currentLevel}s${index + 1}" class="sub-task-button" onclick="completeSubTask(${currentLevel}, ${index + 1}, 'Reward: ${task.reward}')" style="${isCompleted ? 'display:none' : ''}">Complete</button>
+                    <p class="reward" id="reward${currentLevel}_${index + 1}" style="${isCompleted ? 'display:inline-block' : ''}">${isCompleted ? `Reward: ${task.reward}` : ''}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+    container.innerHTML = `
+        <h2>${levelData.title}</h2>
+        <p>${levelData.desc}</p>
+        <div class="task-container">
+            ${tasksHtml}
+        </div>
+        <button class="complete-level-button" id="complete-level-${currentLevel}" style="${completedSubTasks[currentLevel] && Object.keys(completedSubTasks[currentLevel]).filter(subTask => completedSubTasks[currentLevel][subTask]).length === subTasksCount[currentLevel] ? '' : 'display:none'}" onclick="confirmCompleteStage(${currentLevel})">Complete L${currentLevel}</button>
+        <p class="reward" id="reward${currentLevel}"></p>
+    `;
+    highlightCurrentTask();
+}
+function toggleSubTaskDetails(level, subTask) {
+    var details = document.getElementById(`sub-task-${level}-${subTask}`);
+    var button = document.getElementById(`l${level}s${subTask}-btn`);
+    var completeButton = document.getElementById(`complete-l${level}s${subTask}`);
+    if (currentSubTask) {
+        var [prevLevel, prevSubTask] = currentSubTask.split('-');
+        var prevButton = document.getElementById(`l${prevLevel}s${prevSubTask}-btn`);
+        if (prevButton) prevButton.classList.remove('active');
+        var prevDetails = document.getElementById(`sub-task-${prevLevel}-${prevSubTask}`);
+        if (prevDetails) prevDetails.classList.remove('show');
+    }
+    currentSubTask = `${level}-${subTask}`;
+    button.classList.add('active');
+    details.classList.add('show');
+    var isCompleted = completedSubTasks[level] && completedSubTasks[level][subTask];
+    var reward = document.getElementById(`reward${level}_${subTask}`);
+    if (isCompleted) {
+        if (completeButton) completeButton.style.display = 'none';
+        if (reward) reward.style.display = 'inline-block';
+    } else {
+        if (completeButton) completeButton.style.display = 'inline-block';
+    }
+}
+function completeSubTask(level, subTask, reward) {
+    if (!completedSubTasks[level]) completedSubTasks[level] = {};
+    completedSubTasks[level][subTask] = true;
+    localStorage.setItem('completedSubTasks', JSON.stringify(completedSubTasks));
+    var rewardEl = document.getElementById(`reward${level}_${subTask}`);
+    var completeButton = document.getElementById(`complete-l${level}s${subTask}`);
+    var subTaskButton = document.getElementById(`l${level}s${subTask}-btn`);
+    subTaskButton.classList.remove('active');
+    rewardEl.innerText = reward;
+    rewardEl.style.display = 'inline-block';
+    completeButton.style.display = 'none';
+    subTaskButton.classList.add('completed');
+    subTaskButton.innerText = `Sub Task ${subTask} (Done)`;
+    gainXP(20);
+    updateProgress();
+    checkIfAllSubTasksDone(level);
+    showEncouragingMessage();
+    completedSubTaskCount++;
+    localStorage.setItem('completedSubTaskCount', completedSubTaskCount);
+    focusScore += 5;
+    localStorage.setItem('focusScore', focusScore);
+    updateFocusBar();
+    if (completedSubTaskCount > 0 && completedSubTaskCount % 3 === 0) showBreakSuggestion("Short break! Stretch or sip water ☕");
+    let rewardItem = reward.match(/Reward: (.+)/);
+    if (rewardItem && rewardItem[1]) addItemToInventory(rewardItem[1]);
+    currentSubTask = null;
+}
+function checkIfAllSubTasksDone(level) {
+    var completedCount = completedSubTasks[level] ? Object.keys(completedSubTasks[level]).filter(subTask => completedSubTasks[level][subTask]).length : 0;
+    if (completedCount === subTasksCount[level]) document.getElementById(`complete-level-${level}`).style.display = 'inline-block';
+}
+function confirmCompleteStage(level) {
+    if (level === totalLevels && !isAllPreviousLevelsCompleted()) {
+        showConfirmationModal();
+    } else {
+        completeStage(level);
+    }
+}
+function showConfirmationModal() {
+    var modal = document.getElementById('level-modal');
+    modal.innerHTML = `
+        <h3>Are you sure you completed all tasks?</h3>
+        <div style="display:flex;justify-content:space-around;margin-top:20px">
+            <button class="sub-task-button" onclick="completeLastStage()">OK</button>
+            <button class="sub-task-button" onclick="closeLevelModal()">Return</button>
+        </div>
+    `;
+    modal.style.display = 'block';
+}
+function completeLastStage() {
+    completeStage(currentLevel, true);
+    closeLevelModal();
+}
+function completeStage(level, isLast = false) {
+    var completedCount = completedSubTasks[level] ? Object.keys(completedSubTasks[level]).filter(subTask => completedSubTasks[level][subTask]).length : 0;
+    if (completedCount < subTasksCount[level]) {
+        alert("Complete all subtasks first!");
+        return;
+    }
+    document.getElementById(`reward${level}`).innerText = `Level ${level} Done!`;
+    addCompletedLevelBox(level);
+    completedLevels[level] = true;
+    localStorage.setItem('completedLevels', JSON.stringify(completedLevels));
+    if (isLast || isAllLevelsCompleted()) {
+        document.getElementById('game').style.display = 'none';
+        document.getElementById('victory').style.display = 'flex';
+    } else if (level < totalLevels) {
+        currentLevel = level + 1;
+        localStorage.setItem('currentLevel', currentLevel);
+        renderCurrentLevel();
+    }
+    updateProgress();
+}
+function isAllPreviousLevelsCompleted() {
+    for (let i = 1; i < totalLevels; i++) {
+        if (!completedSubTasks[i] || Object.keys(completedSubTasks[i]).filter(subTask => completedSubTasks[i][subTask]).length < subTasksCount[i]) return false;
+    }
+    return true;
+}
+function isAllLevelsCompleted() {
+    for (let i = 1; i <= totalLevels; i++) {
+        if (!completedSubTasks[i] || Object.keys(completedSubTasks[i]).filter(subTask => completedSubTasks[i][subTask]).length < subTasksCount[i] || !completedLevels[i]) return false;
+    }
+    return true;
+}
+function highlightCurrentTask() {
+    if (currentSubTask) {
+        var [level, subTask] = currentSubTask.split('-');
+        var button = document.getElementById(`l${level}s${subTask}-btn`);
+        if (button) button.classList.add('active');
+    } else {
+        var found = false;
+        for (let i = 1; i <= subTasksCount[currentLevel]; i++) {
+            if (!completedSubTasks[currentLevel] || !completedSubTasks[currentLevel][i]) {
+                toggleSubTaskDetails(currentLevel, i);
+                found = true;
+                break;
+            }
+        }
+    }
+}
+function addCompletedLevelBox(level) {
+    var previousLevelsContainer = document.getElementById('previous-levels-container');
+    previousLevelsContainer.style.display = 'flex';
+    var levelBox = document.createElement('div');
+    levelBox.className = 'small-level-box';
+    levelBox.innerText = 'L' + level + ' Done';
+    levelBox.onclick = function() { showLevelModal(level); };
+    if (completedLevels[level]) levelBox.classList.add('completed');
+    previousLevelsContainer.appendChild(levelBox);
+}
+function showLevelSelectionModal() {
+    var modal = document.getElementById('level-modal');
+    let levelButtons = '';
+    for (let i = 1; i <= totalLevels; i++) {
+        levelButtons += `<button class="small-level-box ${completedLevels[i] ? 'completed' : ''}" onclick="selectLevel(${i})" ${completedLevels[i] ? 'disabled' : ''}>Level ${i}</button>`;
+    }
+    modal.innerHTML = `<button class="close-btn" onclick="closeLevelModal()">X</button><h3>Select a Level</h3><div style="display:flex;flex-wrap:wrap;gap:5px;padding:10px">${levelButtons}</div>`;
+    modal.style.display = 'block';
+}
+function selectLevel(level) {
+    currentLevel = level;
+    localStorage.setItem('currentLevel', currentLevel);
+    renderCurrentLevel();
+    closeLevelModal();
+    highlightCurrentTask();
+}
+function showLevelModal(level) {
+    var modal = document.getElementById('level-modal');
+    var levelData = levelsData[level];
+    var html = `<button class="close-btn" onclick="closeLevelModal()">X</button><h3>${levelData.title}</h3><p>${levelData.desc}</p>`;
+    for (var i = 0; i < levelData.tasks.length; i++) {
+        var isCompleted = completedSubTasks[level] && completedSubTasks[level][i + 1];
+        html += `<div style="margin:5px 0"><strong>${levelData.tasks[i].desc}</strong><br><span style="color:${isCompleted ? '#66ff66' : '#ff6666'}">${isCompleted ? 'Completed' : 'Not Completed'}</span></div>`;
+    }
+    modal.innerHTML = html;
+    modal.style.display = 'block';
+}
+function closeLevelModal() {
+    document.getElementById('level-modal').style.display = 'none';
+}
+function loadInventory() {
+    var inventoryItems = JSON.parse(localStorage.getItem('inventory')) || [];
+    var inventoryContainer = document.getElementById('inventory-items');
+    inventoryContainer.innerHTML = '';
+    inventoryItems.forEach(item => {
+        var itemElement = document.createElement('div');
+        itemElement.className = 'inventory-item';
+        itemElement.innerText = item;
+        inventoryContainer.appendChild(itemElement);
+    });
+}
+function addItemToInventory(item) {
+    var inventory = document.getElementById('inventory-items');
+    var itemElement = document.createElement('div');
+    itemElement.className = 'inventory-item';
+    itemElement.innerText = item;
+    inventory.appendChild(itemElement);
+    var inventoryItems = JSON.parse(localStorage.getItem('inventory')) || [];
+    inventoryItems.push(item);
+    localStorage.setItem('inventory', JSON.stringify(inventoryItems));
+}
+function gainXP(amount) {
+    currentXP += amount;
+    if (currentXP >= xpNeeded) {
+        currentXP -= xpNeeded;
+        playerLevel++;
+        xpNeeded = Math.floor(xpNeeded * 1.2);
+        showOverlayMessage(`Level Up! You're now Level ${playerLevel}!`);
+        localStorage.setItem('playerLevel', playerLevel);
+        localStorage.setItem('xpNeeded', xpNeeded);
+    }
+    updateXPBar();
+}
+function updateXPBar() {
+    var xpBar = document.getElementById('xp-bar');
+    var xpText = document.getElementById('xp-text');
+    xpBar.style.width = (currentXP / xpNeeded) * 100 + '%';
+    xpText.innerHTML = `Lvl <span id="player-level">${playerLevel}</span> | XP: <span id="current-xp">${currentXP}</span>/<span id="xp-needed">${xpNeeded}</span>`;
+    localStorage.setItem('currentXP', currentXP);
+}
+function updateProgress() {
+    var completedLevelsCount = 0;
+    for (var i = 1; i <= totalLevels; i++) {
+        var completedCount = 0;
+        if (completedSubTasks[i]) completedCount = Object.keys(completedSubTasks[i]).filter(subTask => completedSubTasks[i][subTask]).length;
+        if (completedCount === subTasksCount[i] && completedLevels[i]) completedLevelsCount++;
+    }
+    document.getElementById('progress-bar').style.width = (completedLevelsCount / totalLevels) * 100 + '%';
+}
+function showVictory() {
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('victory').style.display = 'flex';
+}
+function showOverlayMessage(message) {
+    var overlay = document.getElementById('overlay-message');
+    overlay.innerText = message;
+    overlay.classList.add('show-message');
+    setTimeout(() => overlay.classList.remove('show-message'), 2000);
+}
+function showEncouragingMessage() {
+    var message = encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
+    showOverlayMessage(message);
+}
+function showBreakSuggestion(message) {
+    var breakElement = document.getElementById('break-suggestion');
+    breakElement.innerText = message;
+    breakElement.classList.add('show-message');
+    setTimeout(() => breakElement.classList.remove('show-message'), 3000);
+}
+function updateFocusBar() {
+    var focusBar = document.getElementById('focus-bar');
+    var focusText = document.getElementById('focus-text');
+    focusBar.style.width = (focusScore / 100) * 100 + '%';
+    if (focusScore > 100) focusScore = 100;
+    focusText.innerHTML = `Focus: <span id="focus-score">${focusScore}</span>`;
+}
+function resetGame() {
+    localStorage.clear();
+    location.reload();
+}
+loadInventory();
+document.getElementById('victory').style.display = 'none';
+renderCurrentLevel();
+updateXPBar();
+updateProgress();
+updateFocusBar();
+var prevLevelsContainer = document.getElementById('previous-levels-container');
+for (let i = 1; i <= totalLevels; i++) {
+    if (completedLevels[i]) addCompletedLevelBox(i);
+}
+</script>
+</body>
+</html>
